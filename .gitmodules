@@ -1,0 +1,5 @@
+[submodule "Assets/Sumbodules/ECS-Utilities-Module"]
+	path = Assets/Sumbodules/ECS-Utilities-Module
+	url = https://github.com/dave95b/ECS-Utilities-Module
+[submodule "./Assets/Sumbodules/ECS-Utilities-Module"]
+	update = rebase
