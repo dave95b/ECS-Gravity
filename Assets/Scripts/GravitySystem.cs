@@ -6,8 +6,6 @@ using Unity.Transforms;
 using Unity.Collections;
 using Unity.Mathematics;
 
-using UnityEngine.SceneManagement;
-
 namespace Gravity.ECS
 {
     [UpdateInGroup(typeof(SimulationSystemGroup))]
@@ -23,7 +21,7 @@ namespace Gravity.ECS
             base.OnCreate();
 
             planetsQuery = GetEntityQuery(ComponentType.ReadWrite<Velocity>(), ComponentType.ReadOnly<Mass>(), ComponentType.ReadOnly<Translation>());
-            starsQuery = GetEntityQuery(ComponentType.ReadOnly<Mass>(), ComponentType.ReadOnly<Translation>(), ComponentType.ReadOnly<StarTag>());
+            starsQuery = GetEntityQuery(ComponentType.ReadOnly<Mass>(), ComponentType.ReadOnly<LocalToWorld>(), ComponentType.ReadOnly<StarTag>());
         }
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
@@ -46,10 +44,10 @@ namespace Gravity.ECS
 
             //lastSimulationTime += simulationCount * deltaTime;
 
-            NativeArray<Translation> starsPositions = starsQuery.ToComponentDataArray<Translation>(Allocator.TempJob);
+            NativeArray<LocalToWorld> starsPositions = starsQuery.ToComponentDataArray<LocalToWorld>(Allocator.TempJob);
             NativeArray<Mass> starsMasses = starsQuery.ToComponentDataArray<Mass>(Allocator.TempJob);
 
-            var job = new GravityChunkJob
+            var job = new GravityJob
             {
                 DeltaTime = Time.fixedDeltaTime,
                 StarsPositions = starsPositions,
@@ -64,41 +62,13 @@ namespace Gravity.ECS
     }
 
     [BurstCompile(FloatPrecision.Low, FloatMode.Fast)]
-    struct GravityJob : IJobForEach_CCC<Velocity, Mass, Translation>
-    {
-        [ReadOnly]
-        public float DeltaTime;
-
-        [ReadOnly]
-        public NativeArray<Translation> StarsPositions;
-        [ReadOnly]
-        public NativeArray<Mass> StarsMasses;
-
-        public void Execute(ref Velocity planetVelocity, [ReadOnly] ref Mass planetMass, [ReadOnly] ref Translation planetPosition)
-        {
-            float3 force = float3.zero;
-
-            for (int i = 0; i < StarsPositions.Length; i++)
-            {
-                float3 direction = StarsPositions[i].Value - planetPosition.Value;
-                float distance = math.length(direction);
-                direction = math.normalize(direction);
-
-                force += (StarsMasses[i] * planetMass) / (distance * distance) * direction;
-            }
-
-            planetVelocity.Value += force * DeltaTime;
-        }
-    }
-
-    [BurstCompile(FloatPrecision.Low, FloatMode.Fast)]
-    struct GravityChunkJob : IJobChunk
+    struct GravityJob : IJobChunk
     {
         [ReadOnly]
         public float DeltaTime;
 
         [ReadOnly, DeallocateOnJobCompletion]
-        public NativeArray<Translation> StarsPositions;
+        public NativeArray<LocalToWorld> StarsPositions;
         [ReadOnly, DeallocateOnJobCompletion]
         public NativeArray<Mass> StarsMasses;
 
@@ -123,7 +93,7 @@ namespace Gravity.ECS
 
                 for (int j = 0; j < StarsPositions.Length; j++)
                 {
-                    float3 direction = StarsPositions[j].Value - planetPosition;
+                    float3 direction = StarsPositions[j].Position - planetPosition;
                     float distance = math.length(direction);
                     direction = math.normalize(direction);
 
