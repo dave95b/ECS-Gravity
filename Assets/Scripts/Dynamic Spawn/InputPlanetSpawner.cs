@@ -1,8 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-using Unity.Entities;
-using System.Collections.Generic;
+﻿using Unity.Entities;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace Gravity.ECS.Spawner
 {
@@ -22,7 +20,6 @@ namespace Gravity.ECS.Spawner
         void Start()
         {
             planetPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(prefab, World.Active);
-            //EntityManager.SetName(planetPrefab, "Spawner planet prefab");
             spawnerData.Prefab = planetPrefab;
             spawnerArchetype = EntityManager.CreateArchetype(ComponentType.ReadWrite<PlanetSpawner>(), ComponentType.ReadOnly<Translation>());
         }

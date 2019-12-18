@@ -14,8 +14,6 @@ namespace Gravity.ECS
     {
         private EntityQuery planetsQuery, starsQuery;
 
-        float lastSimulationTime;
-
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -26,24 +24,6 @@ namespace Gravity.ECS
 
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
-            //float currentTime = Time.realtimeSinceStartup;
-            //float difference = currentTime - lastSimulationTime;
-
-            //float deltaTime = Time.fixedDeltaTime;
-            //int simulationCount = (int)(difference / deltaTime);
-
-            //for (int i = 0; i < simulationCount; i++)
-            //{
-            //    var job = new GravityJob
-            //    {
-            //        DeltaTime = Time.fixedDeltaTime,
-            //        StarsPositions = starsPositions,
-            //        StarsMasses = starsMasses
-            //    };
-            //}
-
-            //lastSimulationTime += simulationCount * deltaTime;
-
             NativeArray<LocalToWorld> starsPositions = starsQuery.ToComponentDataArray<LocalToWorld>(Allocator.TempJob);
             NativeArray<Mass> starsMasses = starsQuery.ToComponentDataArray<Mass>(Allocator.TempJob);
 
