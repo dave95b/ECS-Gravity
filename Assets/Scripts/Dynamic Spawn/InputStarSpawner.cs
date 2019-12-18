@@ -22,7 +22,7 @@ namespace Gravity.ECS.Spawner
             EntityManager.RemoveComponent(starPrefab, ComponentType.ReadOnly<NonUniformScale>());
             EntityManager.RemoveComponent(starPrefab, ComponentType.ReadOnly<Rotation>());
             EntityManager.RemoveComponent(starPrefab, ComponentType.ReadOnly<Translation>());
-            EntityManager.SetName(starPrefab, "Spawner star prefab");
+            //EntityManager.SetName(starPrefab, "Spawner star prefab");
         }
 
         public void OnPointerDown(PointerEventData eventData)

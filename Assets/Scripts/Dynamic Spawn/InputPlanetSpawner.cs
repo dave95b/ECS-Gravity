@@ -22,7 +22,7 @@ namespace Gravity.ECS.Spawner
         void Start()
         {
             planetPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(prefab, World.Active);
-            EntityManager.SetName(planetPrefab, "Spawner planet prefab");
+            //EntityManager.SetName(planetPrefab, "Spawner planet prefab");
             spawnerData.Prefab = planetPrefab;
             spawnerArchetype = EntityManager.CreateArchetype(ComponentType.ReadWrite<PlanetSpawner>(), ComponentType.ReadOnly<Translation>());
         }
@@ -34,7 +34,7 @@ namespace Gravity.ECS.Spawner
         }
 
 
-        private void Spawn()
+        public void Spawn()
         {
             Entity spawner = EntityManager.CreateEntity(spawnerArchetype);
             EntityManager.SetComponentData(spawner, spawnerData);
